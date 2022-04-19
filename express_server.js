@@ -34,13 +34,13 @@ app.get('/urls.json', (req, res) => {
   res.json(urlDatabase);
 });
 
-app.get('/hello', (req, res) => {
-  res.send('<html><body>Hello <b>World</b></body></html>\n');
+app.get('/404', (req, res) => {
+  res.send('<html><body><h1>404 Page not found</h1></body></html>');
 });
 
 app.get('/u/:shortURL', (req, res) => {
   const longURL = urlDatabase[req.params.shortURL];
-  res.redirect(longURL);
+  longURL ? res.redirect(longURL) : res.redirect('/404');
 });
 
 app.post('/urls', (req, res) => {
