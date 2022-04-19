@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-var morgan = require('morgan');
+const morgan = require('morgan');
+const cookieParser = require('cookie-parser');
 
 const app = express();
 const PORT = 8080;
