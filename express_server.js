@@ -39,14 +39,16 @@ app.get('/hello', (req, res) => {
 });
 
 app.post('/urls', (req, res) => {
-  console.log(req.body);
-  res.send('OK');
+  const body = req.body;
+  let randomString = generateRandomString();
+  urlDatabase[randomString] = body.longURL;
+  res.redirect(`/urls/${randomString}`);
 });
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
 
-const generateRandomString = () => {
+function generateRandomString() {
   return Math.random().toString(36).slice(2, 8);
-};
+}
