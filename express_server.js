@@ -13,7 +13,7 @@ const urlDatabase = {
 };
 
 app.get('/', (req, res) => {
-  res.send('Hello!');
+  res.redirect('/urls');
 });
 
 app.get('/urls', (req, res) => {
@@ -50,8 +50,14 @@ app.post('/urls', (req, res) => {
   res.redirect(`/urls/${randomString}`);
 });
 
+app.post('/urls/:shortURL/delete', (req, res) => {
+  const key = req.params.shortURL;
+  delete urlDatabase[key];
+  res.redirect('/urls');
+});
+
 app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}!`);
+  console.log(`Tiny app listening on port ${PORT}!`);
 });
 
 function generateRandomString() {
