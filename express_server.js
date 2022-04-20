@@ -65,8 +65,11 @@ app.get('/register', (req, res) => {
 
 app.post('/register', (req, res) => {
   const { email, password } = req.body;
+  // check if email or pswd are empty
+  !email || !password ? res.status(400).send('Username or password is empty') : null;
   const id = generateRandomString();
   users[id] = { id, email, password };
+  // store user id cookie
   res.cookie('user_id', id);
   res.redirect('/urls');
 });
