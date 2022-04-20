@@ -12,7 +12,6 @@
     >
       <span class="navbar-toggler-icon"></span>
     </button>
-
     <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
       <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
         <li class="nav-item active ml-4">
@@ -23,9 +22,9 @@
         </li>
       </ul>
 
-      <% if(typeof username!=='undefined'){%>
+      <% if(typeof user!=='undefined'){%>
 
-      <h5 class="text-light mr-3 p-3"><%=username%></h5>
+      <h5 class="text-light mr-3 p-3"><%=user.email%></h5>
 
       <form class="form-inline my-2 my-lg-0" method="POST" action="/logout">
         <button type="submit" class="btn btn-warning">Logout</button>
