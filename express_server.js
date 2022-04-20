@@ -12,8 +12,14 @@ app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 const urlDatabase = {
-  b2xVn2: 'http://www.lighthouselabs.ca',
-  '9sm5xK': 'http://www.google.com',
+  b6UTxQ: {
+    longURL: 'http://www.lighthouselabs.ca',
+    userID: 'aJ48lW',
+  },
+  i3BoGr: {
+    longURL: 'https://www.google.ca',
+    userID: 'aJ48lW',
+  },
 };
 
 let users = {};
@@ -37,6 +43,12 @@ app.get('/', (req, res) => {
 
 app.get('/urls', (req, res) => {
   const user = users[req.cookies['user_id']];
+  // console.log(user);
+  // console.log('urlDatabase: ', urlDatabase);
+  // console.log(urlDatabase[user]);
+  // if(user){
+
+  // }
   const templateVars = { urls: urlDatabase, user };
   res.render('urls_index', templateVars);
 });
@@ -44,7 +56,9 @@ app.get('/urls', (req, res) => {
 app.get('/urls/new', (req, res) => {
   const user = users[req.cookies['user_id']];
   const templateVars = { user };
-  res.render('urls_new', templateVars);
+
+  // Only logged in user can shorten urls
+  user ? res.render('urls_new', templateVars) : res.redirect('/login');
 });
 
 app.get('/urls/:shortURL', (req, res) => {
@@ -94,10 +108,16 @@ app.post('/register', (req, res) => {
 });
 
 app.post('/urls', (req, res) => {
+  const user = users[req.cookies['user_id']];
+
   const body = req.body;
   const randomString = generateRandomString();
-  urlDatabase[randomString] = body.longURL;
-  res.redirect(`/urls/${randomString}`);
+
+  //Add new long url and user_id to database
+  urlDatabase[randomString] = { longURL: body.longURL, userID: user.id };
+
+  //Only logged in users can send post req.
+  user ? res.redirect(`/urls/${randomString}`) : res.status(400).send('400 error!!!!');
 });
 
 app.post('/urls/:shortURL/delete', (req, res) => {
