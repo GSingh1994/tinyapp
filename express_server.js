@@ -48,6 +48,11 @@ app.get('/u/:shortURL', (req, res) => {
   longURL ? res.redirect(longURL) : res.redirect('/404');
 });
 
+app.get('/register', (req, res) => {
+  const templateVars = { username: req.cookies['username'] };
+  res.render('user_new', templateVars);
+});
+
 app.post('/urls', (req, res) => {
   const body = req.body;
   let randomString = generateRandomString();
