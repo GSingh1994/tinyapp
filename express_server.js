@@ -86,7 +86,7 @@ app.get('/404', (req, res) => {
 });
 
 app.get('/u/:shortURL', (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL];
+  const longURL = urlDatabase[req.params.shortURL].longURL;
   longURL ? res.redirect(longURL) : res.redirect('/404');
 });
 
