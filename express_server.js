@@ -41,15 +41,22 @@ app.get('/', (req, res) => {
   res.redirect('/urls');
 });
 
+//get short url and long url from urlDatabase and make a new db. for current user
+const currentUserDatabase = (allUserData, currentUser) => {
+  const newDatabase = {};
+  const dataBaseKeys = Object.keys(allUserData);
+  for (const key of dataBaseKeys) {
+    if (currentUser && currentUser.id === allUserData[key].userID) {
+      newDatabase[key] = allUserData[key].longURL;
+    }
+  }
+  return newDatabase;
+};
+
 app.get('/urls', (req, res) => {
   const user = users[req.cookies['user_id']];
-  // console.log(user);
-  // console.log('urlDatabase: ', urlDatabase);
-  // console.log(urlDatabase[user]);
-  // if(user){
 
-  // }
-  const templateVars = { urls: urlDatabase, user };
+  const templateVars = { urls: currentUserDatabase(urlDatabase, user), user };
   res.render('urls_index', templateVars);
 });
 
@@ -63,7 +70,10 @@ app.get('/urls/new', (req, res) => {
 
 app.get('/urls/:shortURL', (req, res) => {
   const user = users[req.cookies['user_id']];
-  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], user };
+  const shortURL = req.params.shortURL;
+
+  const currentURL = currentUserDatabase(urlDatabase, user);
+  const templateVars = { shortURL: shortURL, longURL: currentURL[shortURL], user };
   res.render('urls_show', templateVars);
 });
 
@@ -122,12 +132,14 @@ app.post('/urls', (req, res) => {
 
 app.post('/urls/:shortURL/delete', (req, res) => {
   const key = req.params.shortURL;
+
   delete urlDatabase[key];
   res.redirect('/urls');
 });
 
 app.post('/urls/:id', (req, res) => {
-  urlDatabase[req.params.id] = req.body.update;
+  //edit and update urls matching id
+  urlDatabase[req.params.id].longURL = req.body.update;
   res.redirect(`/urls/${req.params.id}`);
 });
 
