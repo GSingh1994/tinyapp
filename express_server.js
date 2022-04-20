@@ -22,10 +22,10 @@ const generateRandomString = () => {
   return Math.random().toString(36).slice(2, 8);
 };
 
-const isDuplicateEmail = (usersObj, givenEmail) => {
+const isRegistered = (usersObj, givenEmail) => {
   for (const user in usersObj) {
     if (usersObj[user].email === givenEmail) {
-      return true;
+      return user;
     }
   }
   return false;
@@ -81,15 +81,15 @@ app.post('/register', (req, res) => {
   // check if email or pswd are empty
   !email || !password ? res.status(400).send('Username or password is empty') : null;
   // check if email is already taken
-  if (isDuplicateEmail(users, email)) {
+  if (isRegistered(users, email)) {
     return res.status(400).send('email is already registered');
   }
 
   const id = generateRandomString();
   users[id] = { id, email, password };
+
   // store user id cookie
   res.cookie('user_id', id);
-
   res.redirect('/urls');
 });
 
@@ -112,8 +112,22 @@ app.post('/urls/:id', (req, res) => {
 });
 
 app.post('/login', (req, res) => {
-  const username = req.body.username;
-  res.cookie('username', username);
+  const { email, password } = req.body;
+
+  //store value of user if it exist in users object
+  const currentUser = isRegistered(users, email);
+
+  //check if user is registered
+  if (!currentUser) {
+    return res.status(403).send('This email is not registered');
+  }
+
+  // check if password is correct
+  if (password !== users[currentUser].password) {
+    return res.status(403).send('Password doesnot match');
+  }
+
+  res.cookie('user_id', users[currentUser].id);
   res.redirect('/urls');
 });
 
