@@ -22,6 +22,15 @@ const generateRandomString = () => {
   return Math.random().toString(36).slice(2, 8);
 };
 
+const isDuplicateEmail = (usersObj, givenEmail) => {
+  for (const user in usersObj) {
+    if (usersObj[user].email === givenEmail) {
+      return true;
+    }
+  }
+  return false;
+};
+
 app.get('/', (req, res) => {
   res.redirect('/urls');
 });
@@ -58,6 +67,8 @@ app.get('/u/:shortURL', (req, res) => {
 });
 
 app.get('/register', (req, res) => {
+  console.log(users);
+
   const user = users[req.cookies['user_id']];
   const templateVars = { user };
   res.render('user_new', templateVars);
@@ -67,10 +78,16 @@ app.post('/register', (req, res) => {
   const { email, password } = req.body;
   // check if email or pswd are empty
   !email || !password ? res.status(400).send('Username or password is empty') : null;
-  const id = generateRandomString();
-  users[id] = { id, email, password };
-  // store user id cookie
-  res.cookie('user_id', id);
+  // check if email is already taken
+  if (isDuplicateEmail(users, email)) {
+    res.status(400).send('email is already registered');
+  } else {
+    const id = generateRandomString();
+    users[id] = { id, email, password };
+    // store user id cookie
+    res.cookie('user_id', id);
+  }
+
   res.redirect('/urls');
 });
 
