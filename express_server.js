@@ -16,6 +16,12 @@ const urlDatabase = {
   '9sm5xK': 'http://www.google.com',
 };
 
+let users = {};
+
+const generateRandomString = () => {
+  return Math.random().toString(36).slice(2, 8);
+};
+
 app.get('/', (req, res) => {
   res.redirect('/urls');
 });
@@ -53,9 +59,16 @@ app.get('/register', (req, res) => {
   res.render('user_new', templateVars);
 });
 
+app.post('/register', (req, res) => {
+  const { email, password } = req.body;
+  const id = generateRandomString();
+  users[id] = { id, email, password };
+  res.redirect('/urls');
+});
+
 app.post('/urls', (req, res) => {
   const body = req.body;
-  let randomString = generateRandomString();
+  const randomString = generateRandomString();
   urlDatabase[randomString] = body.longURL;
   res.redirect(`/urls/${randomString}`);
 });
@@ -85,7 +98,3 @@ app.post('/logout', (req, res) => {
 app.listen(PORT, () => {
   console.log(`Tiny app listening on port ${PORT}!`);
 });
-
-function generateRandomString() {
-  return Math.random().toString(36).slice(2, 8);
-}
