@@ -7,7 +7,7 @@ const app = express();
 const PORT = 8080;
 
 app.set('view engine', 'ejs');
-app.use(morgan('tiny'));
+app.use(morgan('dev'));
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -68,7 +68,6 @@ app.get('/u/:shortURL', (req, res) => {
 
 app.get('/register', (req, res) => {
   console.log(users);
-
   const user = users[req.cookies['user_id']];
   const templateVars = { user };
   res.render('user_new', templateVars);
@@ -80,13 +79,13 @@ app.post('/register', (req, res) => {
   !email || !password ? res.status(400).send('Username or password is empty') : null;
   // check if email is already taken
   if (isDuplicateEmail(users, email)) {
-    res.status(400).send('email is already registered');
-  } else {
-    const id = generateRandomString();
-    users[id] = { id, email, password };
-    // store user id cookie
-    res.cookie('user_id', id);
+    return res.status(400).send('email is already registered');
   }
+
+  const id = generateRandomString();
+  users[id] = { id, email, password };
+  // store user id cookie
+  res.cookie('user_id', id);
 
   res.redirect('/urls');
 });
