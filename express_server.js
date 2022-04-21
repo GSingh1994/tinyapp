@@ -66,9 +66,12 @@ app.get('/404', (req, res) => {
 });
 
 app.get('/u/:shortURL', (req, res) => {
-  const user = users[req.session.user_id];
+  //send 404 if the shortURL is not in the database
+  if (!urlDatabase[req.params.shortURL]) {
+    return res.redirect('/404');
+  }
   const longURL = urlDatabase[req.params.shortURL].longURL;
-  longURL && user ? res.redirect(longURL) : res.redirect('/404');
+  return res.redirect(longURL);
 });
 
 app.get('/register', (req, res) => {
