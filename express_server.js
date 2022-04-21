@@ -28,7 +28,8 @@ const urlDatabase = {
 let users = {};
 
 app.get('/', (req, res) => {
-  res.redirect('/urls');
+  const user = users[req.session.user_id];
+  user ? res.redirect('/urls') : res.redirect('/login');
 });
 
 app.get('/urls', (req, res) => {
