@@ -48,13 +48,10 @@ app.get('/urls/new', (req, res) => {
 
 app.get('/urls/:shortURL', (req, res) => {
   const user = users[req.session.user_id];
-  console.log(user);
   const shortURL = req.params.shortURL;
   const currentURL = currentUserDatabase(urlDatabase, user);
   const templateVars = { shortURL: shortURL, longURL: currentURL[shortURL], user };
-
-  //send 404 error if :shortURL is not in the user db. else render page
-  shortURL !== Object.keys(currentURL)[0] ? res.redirect('/404') : res.render('urls_show', templateVars);
+  res.render('urls_show', templateVars);
 });
 
 app.get('/urls.json', (req, res) => {
@@ -113,7 +110,7 @@ app.post('/urls', (req, res) => {
   urlDatabase[randomString] = { longURL: body.longURL, userID: user.id };
 
   //Only logged in users can send post req.
-  user ? res.redirect(`/urls/${randomString}`) : res.status(400).send('400 error!!!!');
+  user ? res.redirect(`/urls`) : res.status(400).send('400 error!!!!');
 });
 
 app.post('/urls/:shortURL/delete', (req, res) => {
@@ -121,7 +118,7 @@ app.post('/urls/:shortURL/delete', (req, res) => {
   const user = users[req.session.user_id];
   const currentURL = currentUserDatabase(urlDatabase, user);
 
-  //delete only if cprrect user is logged in
+  //delete only if correct user is logged in
   if (currentURL[key]) {
     delete urlDatabase[key];
     res.redirect('/urls');
@@ -134,7 +131,7 @@ app.post('/urls/:id', (req, res) => {
   const user = users[req.session.user_id];
   //edit and update urls matching id if the user is logged in
   user.id ? (urlDatabase[req.params.id].longURL = req.body.update) : null;
-  res.redirect(`/urls/${req.params.id}`);
+  res.redirect(`/urls`);
 });
 
 app.post('/login', (req, res) => {
@@ -153,12 +150,13 @@ app.post('/login', (req, res) => {
   if (!isHashPasswordMatch) {
     return res.status(403).send('Password doesnot match');
   }
-
+  // set session cookie
   req.session.user_id = users[currentUser].id;
   res.redirect('/urls');
 });
 
 app.post('/logout', (req, res) => {
+  // clear session cookie
   req.session = null;
   res.redirect('/urls');
 });
