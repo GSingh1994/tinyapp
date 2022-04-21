@@ -1,7 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
-const cookieParser = require('cookie-parser');
 const bcrypt = require('bcryptjs');
 
 const app = express();
@@ -9,7 +8,6 @@ const PORT = 8080;
 
 app.set('view engine', 'ejs');
 app.use(morgan('dev'));
-app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 const urlDatabase = {
