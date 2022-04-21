@@ -48,10 +48,13 @@ app.get('/urls/new', (req, res) => {
 
 app.get('/urls/:shortURL', (req, res) => {
   const user = users[req.session.user_id];
+  console.log(user);
   const shortURL = req.params.shortURL;
   const currentURL = currentUserDatabase(urlDatabase, user);
   const templateVars = { shortURL: shortURL, longURL: currentURL[shortURL], user };
-  res.render('urls_show', templateVars);
+
+  //send 404 error if :shortURL is not in the user db. else render page
+  shortURL !== Object.keys(currentURL)[0] ? res.redirect('/404') : res.render('urls_show', templateVars);
 });
 
 app.get('/urls.json', (req, res) => {
@@ -100,7 +103,6 @@ app.post('/register', (req, res) => {
 
 app.post('/urls', (req, res) => {
   const user = users[req.session.user_id];
-
   const body = req.body;
   const randomString = generateRandomString();
 
@@ -128,7 +130,7 @@ app.post('/urls/:shortURL/delete', (req, res) => {
 app.post('/urls/:id', (req, res) => {
   const user = users[req.session.user_id];
   //edit and update urls matching id if the user is logged in
-  user ? (urlDatabase[req.params.id].longURL = req.body.update) : null;
+  user.id ? (urlDatabase[req.params.id].longURL = req.body.update) : null;
   res.redirect(`/urls/${req.params.id}`);
 });
 
