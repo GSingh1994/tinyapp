@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const bcrypt = require('bcryptjs');
+var cookieSession = require('cookie-session');
 
 const app = express();
 const PORT = 8080;
