@@ -16,10 +16,6 @@ const urlDatabase = {
     longURL: 'http://www.lighthouselabs.ca',
     userID: 'aJ48lW',
   },
-  i3BoGr: {
-    longURL: 'https://www.google.ca',
-    userID: 'aJ48lW',
-  },
 };
 
 let users = {};
@@ -55,7 +51,6 @@ const currentUserDatabase = (allUserData, currentUser) => {
 
 app.get('/urls', (req, res) => {
   const user = users[req.cookies['user_id']];
-
   const templateVars = { urls: currentUserDatabase(urlDatabase, user), user };
   res.render('urls_index', templateVars);
 });
@@ -134,9 +129,15 @@ app.post('/urls', (req, res) => {
 app.post('/urls/:shortURL/delete', (req, res) => {
   const key = req.params.shortURL;
   const user = users[req.cookies['user_id']];
-  //delete only if user is logged in
-  user ? delete urlDatabase[key] : null;
-  res.redirect('/urls');
+  const currentURL = currentUserDatabase(urlDatabase, user);
+
+  //delete only if cprrect user is logged in
+  if (currentURL[key]) {
+    delete urlDatabase[key];
+    res.redirect('/urls');
+  } else {
+    res.status(401).send('unauthorised user');
+  }
 });
 
 app.post('/urls/:id', (req, res) => {
