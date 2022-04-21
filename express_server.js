@@ -2,7 +2,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const bcrypt = require('bcryptjs');
-var cookieSession = require('cookie-session');
+const cookieSession = require('cookie-session');
+const { isRegistered } = require('./helpers');
 
 const app = express();
 const PORT = 8080;
@@ -28,15 +29,6 @@ let users = {};
 
 const generateRandomString = () => {
   return Math.random().toString(36).slice(2, 8);
-};
-
-const isRegistered = (usersObj, givenEmail) => {
-  for (const user in usersObj) {
-    if (usersObj[user].email === givenEmail) {
-      return user;
-    }
-  }
-  return false;
 };
 
 app.get('/', (req, res) => {
