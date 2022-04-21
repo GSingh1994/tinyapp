@@ -86,8 +86,9 @@ app.get('/404', (req, res) => {
 });
 
 app.get('/u/:shortURL', (req, res) => {
+  const user = users[req.cookies['user_id']];
   const longURL = urlDatabase[req.params.shortURL].longURL;
-  longURL ? res.redirect(longURL) : res.redirect('/404');
+  longURL && user ? res.redirect(longURL) : res.redirect('/404');
 });
 
 app.get('/register', (req, res) => {
@@ -132,14 +133,16 @@ app.post('/urls', (req, res) => {
 
 app.post('/urls/:shortURL/delete', (req, res) => {
   const key = req.params.shortURL;
-
-  delete urlDatabase[key];
+  const user = users[req.cookies['user_id']];
+  //delete only if user is logged in
+  user ? delete urlDatabase[key] : null;
   res.redirect('/urls');
 });
 
 app.post('/urls/:id', (req, res) => {
-  //edit and update urls matching id
-  urlDatabase[req.params.id].longURL = req.body.update;
+  const user = users[req.cookies['user_id']];
+  //edit and update urls matching id if the user is logged in
+  user ? (urlDatabase[req.params.id].longURL = req.body.update) : null;
   res.redirect(`/urls/${req.params.id}`);
 });
 
