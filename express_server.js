@@ -10,6 +10,12 @@ const PORT = 8080;
 app.set('view engine', 'ejs');
 app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(
+  cookieSession({
+    name: 'session',
+    keys: ['secretkey'],
+  })
+);
 
 const urlDatabase = {
   b6UTxQ: {
@@ -50,13 +56,13 @@ const currentUserDatabase = (allUserData, currentUser) => {
 };
 
 app.get('/urls', (req, res) => {
-  const user = users[req.cookies['user_id']];
+  const user = users[req.session.user_id];
   const templateVars = { urls: currentUserDatabase(urlDatabase, user), user };
   res.render('urls_index', templateVars);
 });
 
 app.get('/urls/new', (req, res) => {
-  const user = users[req.cookies['user_id']];
+  const user = users[req.session.user_id];
   const templateVars = { user };
 
   // Only logged in user can shorten urls
@@ -64,7 +70,7 @@ app.get('/urls/new', (req, res) => {
 });
 
 app.get('/urls/:shortURL', (req, res) => {
-  const user = users[req.cookies['user_id']];
+  const user = users[req.session.user_id];
   const shortURL = req.params.shortURL;
 
   const currentURL = currentUserDatabase(urlDatabase, user);
@@ -81,13 +87,13 @@ app.get('/404', (req, res) => {
 });
 
 app.get('/u/:shortURL', (req, res) => {
-  const user = users[req.cookies['user_id']];
+  const user = users[req.session.user_id];
   const longURL = urlDatabase[req.params.shortURL].longURL;
   longURL && user ? res.redirect(longURL) : res.redirect('/404');
 });
 
 app.get('/register', (req, res) => {
-  const user = users[req.cookies['user_id']];
+  const user = users[req.session.user_id];
   const templateVars = { user };
   res.render('user_new', templateVars);
 });
@@ -112,12 +118,12 @@ app.post('/register', (req, res) => {
   users[id] = { id, email, password: hashedPassword };
 
   // store user id cookie
-  res.cookie('user_id', id);
+  req.session.user_id = id;
   res.redirect('/urls');
 });
 
 app.post('/urls', (req, res) => {
-  const user = users[req.cookies['user_id']];
+  const user = users[req.session.user_id];
 
   const body = req.body;
   const randomString = generateRandomString();
@@ -131,7 +137,7 @@ app.post('/urls', (req, res) => {
 
 app.post('/urls/:shortURL/delete', (req, res) => {
   const key = req.params.shortURL;
-  const user = users[req.cookies['user_id']];
+  const user = users[req.session.user_id];
   const currentURL = currentUserDatabase(urlDatabase, user);
 
   //delete only if cprrect user is logged in
@@ -144,7 +150,7 @@ app.post('/urls/:shortURL/delete', (req, res) => {
 });
 
 app.post('/urls/:id', (req, res) => {
-  const user = users[req.cookies['user_id']];
+  const user = users[req.session.user_id];
   //edit and update urls matching id if the user is logged in
   user ? (urlDatabase[req.params.id].longURL = req.body.update) : null;
   res.redirect(`/urls/${req.params.id}`);
@@ -167,12 +173,12 @@ app.post('/login', (req, res) => {
     return res.status(403).send('Password doesnot match');
   }
 
-  res.cookie('user_id', users[currentUser].id);
+  req.session.user_id = users[currentUser].id;
   res.redirect('/urls');
 });
 
 app.post('/logout', (req, res) => {
-  res.clearCookie('user_id');
+  req.session = null;
   res.redirect('/urls');
 });
 
