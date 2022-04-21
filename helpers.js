@@ -7,4 +7,20 @@ const isRegistered = (usersObj, givenEmail) => {
   return false;
 };
 
-module.exports = { isRegistered };
+const generateRandomString = () => {
+  return Math.random().toString(36).slice(2, 8);
+};
+
+//get short url and long url from urlDatabase and make a new db. for current user
+const currentUserDatabase = (allUserData, currentUser) => {
+  const newDatabase = {};
+  const dataBaseKeys = Object.keys(allUserData);
+  for (const key of dataBaseKeys) {
+    if (currentUser && currentUser.id === allUserData[key].userID) {
+      newDatabase[key] = allUserData[key].longURL;
+    }
+  }
+  return newDatabase;
+};
+
+module.exports = { isRegistered, generateRandomString, currentUserDatabase };

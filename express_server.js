@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const bcrypt = require('bcryptjs');
 const cookieSession = require('cookie-session');
-const { isRegistered } = require('./helpers');
+const { isRegistered, generateRandomString, currentUserDatabase } = require('./helpers');
 
 const app = express();
 const PORT = 8080;
@@ -27,25 +27,9 @@ const urlDatabase = {
 
 let users = {};
 
-const generateRandomString = () => {
-  return Math.random().toString(36).slice(2, 8);
-};
-
 app.get('/', (req, res) => {
   res.redirect('/urls');
 });
-
-//get short url and long url from urlDatabase and make a new db. for current user
-const currentUserDatabase = (allUserData, currentUser) => {
-  const newDatabase = {};
-  const dataBaseKeys = Object.keys(allUserData);
-  for (const key of dataBaseKeys) {
-    if (currentUser && currentUser.id === allUserData[key].userID) {
-      newDatabase[key] = allUserData[key].longURL;
-    }
-  }
-  return newDatabase;
-};
 
 app.get('/urls', (req, res) => {
   const user = users[req.session.user_id];
@@ -64,7 +48,6 @@ app.get('/urls/new', (req, res) => {
 app.get('/urls/:shortURL', (req, res) => {
   const user = users[req.session.user_id];
   const shortURL = req.params.shortURL;
-
   const currentURL = currentUserDatabase(urlDatabase, user);
   const templateVars = { shortURL: shortURL, longURL: currentURL[shortURL], user };
   res.render('urls_show', templateVars);
