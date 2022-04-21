@@ -24,15 +24,15 @@
 
       <% if(typeof user!=='undefined'){%>
 
-      <h5 class="text-light mr-3 p-3"><%=user.email%></h5>
+      <h6 class="text-light mr-3 p-3"><%=user.email%></h6>
 
-      <form class="form-inline my-2 my-lg-0" method="POST" action="/logout">
+      <form class="form-inline my-3 my-lg-0" method="POST" action="/logout">
         <button type="submit" class="btn btn-warning">Logout</button>
       </form>
       <% }else{ %>
 
-      <button type="button" class="btn btn-success"><a href="/login">Log in</a></button>
-      <button type="button" class="btn btn-success"><a href="/register">Register</a></button>
+      <h5><a class="badge badge-primary px-4 py-2 mx-4 m-2" href="/login">Log in</a></h5>
+      <h5><a class="badge badge-primary px-4 py-2 mx-4 m-2" href="/register">Register</a></h5>
 
       <% } %>
     </div>
