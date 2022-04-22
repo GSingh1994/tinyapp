@@ -17,7 +17,7 @@ const currentUserDatabase = (allUserData, currentUser) => {
   const dataBaseKeys = Object.keys(allUserData);
   for (const key of dataBaseKeys) {
     if (currentUser && currentUser.id === allUserData[key].userID) {
-      newDatabase[key] = allUserData[key].longURL;
+      newDatabase[key] = { longURL: allUserData[key].longURL, userID: allUserData[key].userID };
     }
   }
   return newDatabase;

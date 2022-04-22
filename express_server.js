@@ -41,7 +41,6 @@ app.get('/urls', (req, res) => {
 app.get('/urls/new', (req, res) => {
   const user = users[req.session.user_id];
   const templateVars = { user };
-
   // Only logged in user can shorten urls
   user ? res.render('urls_new', templateVars) : res.redirect('/login');
 });
@@ -50,8 +49,14 @@ app.get('/urls/:shortURL', (req, res) => {
   const user = users[req.session.user_id];
   const shortURL = req.params.shortURL;
   const currentURL = currentUserDatabase(urlDatabase, user);
-  const templateVars = { shortURL: shortURL, longURL: currentURL[shortURL], user };
-  res.render('urls_show', templateVars);
+  const templateVars = { shortURL: shortURL, longURL: currentURL[shortURL].longURL, user };
+
+  //Only current login user can see urls_show page
+  if (currentURL[shortURL]) {
+    currentURL[shortURL].userID === user.id ? res.render('urls_show', templateVars) : res.redirect('/404');
+  } else {
+    res.redirect('/404');
+  }
 });
 
 app.get('/urls.json', (req, res) => {
