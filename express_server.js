@@ -74,11 +74,16 @@ app.get('/u/:shortURL', (req, res) => {
 app.get('/register', (req, res) => {
   const user = users[req.session.user_id];
   const templateVars = { user };
-  res.render('user_new', templateVars);
+
+  //if user is already registered, then redirect to /urls otherwise render register page
+  user ? res.redirect('/urls') : res.render('user_new', templateVars);
 });
 
 app.get('/login', (req, res) => {
-  res.render('user_login');
+  const user = users[req.session.user_id];
+
+  //if user is already logged in, then redirect to /urls otherwise render login page
+  user ? res.redirect('/urls') : res.render('user_login');
 });
 
 app.post('/register', (req, res) => {
