@@ -116,14 +116,18 @@ app.post('/register', (req, res) => {
 
 app.post('/urls', (req, res) => {
   const user = users[req.session.user_id];
+
+  //send error if user trying to post is not logged in
+  if (!user) {
+    return res.status(400).send('400 error!!!!');
+  }
   const body = req.body;
   const randomString = generateRandomString();
 
   //Add new long url and user_id to database
   urlDatabase[randomString] = { longURL: body.longURL, userID: user.id };
-
   //Only logged in users can send post req.
-  user ? res.redirect(`/urls`) : res.status(400).send('400 error!!!!');
+  res.redirect(`/urls`);
 });
 
 app.post('/urls/:shortURL/delete', (req, res) => {
@@ -142,6 +146,12 @@ app.post('/urls/:shortURL/delete', (req, res) => {
 
 app.post('/urls/:id', (req, res) => {
   const user = users[req.session.user_id];
+
+  //send error if user trying to post is not logged in
+  if (!user) {
+    return res.status(400).send('400 error!!!!');
+  }
+
   //edit and update urls matching id if the user is logged in
   user.id ? (urlDatabase[req.params.id].longURL = req.body.update) : null;
   res.redirect(`/urls`);
