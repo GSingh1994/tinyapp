@@ -88,8 +88,11 @@ app.get('/login', (req, res) => {
 
 app.post('/register', (req, res) => {
   const { email, password } = req.body;
+
   // check if email or pswd are empty
-  !email || !password ? res.status(400).send('Username or password is empty') : null;
+  if (!email || !password) {
+    return res.status(400).send('Username or password is empty');
+  }
   // check if email is already taken
   if (isRegistered(users, email)) {
     return res.status(400).send('email is already registered');
@@ -147,7 +150,7 @@ app.post('/login', (req, res) => {
 
   //check if user is registered
   if (!currentUser) {
-    return res.status(403).send('This email is not registered');
+    return res.status(403).send('This email is not registered or email field is empty');
   }
   //check hash password
   const isHashPasswordMatch = bcrypt.compareSync(password, users[currentUser].password);
