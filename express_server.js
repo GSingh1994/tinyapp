@@ -49,6 +49,11 @@ app.get('/urls/:shortURL', (req, res) => {
   const user = users[req.session.user_id];
   const shortURL = req.params.shortURL;
   const currentURL = currentUserDatabase(urlDatabase, user);
+
+  //if shortURL is invalid then send error
+  if (!currentURL[shortURL]) {
+    return res.redirect('/404');
+  }
   const templateVars = { shortURL: shortURL, longURL: currentURL[shortURL].longURL, user };
 
   //Only current login user can see urls_show page
