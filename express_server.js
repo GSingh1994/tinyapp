@@ -127,7 +127,7 @@ app.post('/urls', (req, res) => {
   //Add new long url and user_id to database
   urlDatabase[randomString] = { longURL: body.longURL, userID: user.id };
   //Only logged in users can send post req.
-  res.redirect(`/urls`);
+  res.redirect(`/urls/${randomString}`);
 });
 
 app.post('/urls/:shortURL/delete', (req, res) => {
