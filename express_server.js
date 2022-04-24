@@ -78,6 +78,12 @@ app.get('/u/:shortURL', (req, res) => {
     return res.redirect('/404');
   }
   const longURL = urlDatabase[req.params.shortURL].longURL;
+  const user = users[req.session.user_id];
+
+  //If user doesnot own url, then send error
+  if (user && user.id !== urlDatabase[req.params.shortURL].userID) {
+    return res.redirect('/404');
+  }
   return res.redirect(longURL);
 });
 
